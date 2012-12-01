@@ -1,0 +1,13 @@
+*.aux
+*.log
+README.tex~
+*.o
+*.swp
+libsigsegv-2.6/tests/*
+libsigsegv-2.6/termbold
+libsigsegv-2.6/termnorm
+libsigsegv-2.6/stamp-h1
+libsigsegv-2.6/src/*.lo
+libsigsegv-2.6/src/*.la
+libsigsegv-2.6/.libs/
+libsigsegv-2.6/libtool
