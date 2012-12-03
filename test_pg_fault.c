@@ -11,7 +11,7 @@ unsigned long page;
 int
 handler(void *fault_address, int serious)
 {
-  printf("handler called\n");
+  printf("handler called, hi from Sashko\n");
 
   if ( mprotect ( (void *) page, 0x4000, PROT_READ_WRITE) == 0 )
     return 1; 
