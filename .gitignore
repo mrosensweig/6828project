@@ -2,6 +2,7 @@
 *.log
 README.tex~
 *.o
+*.a
 *.out
 *.swp
 libsigsegv-2.6/tests/*
