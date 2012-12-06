@@ -10,3 +10,7 @@
 #endif
 
 extern void dsm_init(void);
+
+static int dsm_area_handler (void *fault_address, void *user_arg);
+
+static int handler (void *fault_address, int serious);
