@@ -9,6 +9,7 @@ int set_permissions(void *addr, size_t len, int prot)
   dsm_page_num = get_pagenum(addr);
 
   if (dsm_page_num < 0 || dsm_page_num > NPAGES - 1) {
+    fprintf(stderr, "Error: out of dsm range");
     return -1;
   }
 
