@@ -19,14 +19,43 @@ dsm_init(void)
   }
   dsm_area = (unsigned long) p;
 
-  sigsegv_register(&dispatcher,(void *)dsm_area,PGSIZE,&dsm_area_handler,&dsm_area);
+  sigsegv_register(&dispatcher, 
+                   (void *)dsm_area,
+                   PGSIZE * NPAGES,
+                   &dsm_area_handler,
+                   &dsm_area);
   
 }
 
 static int
 dsm_area_handler (void *fault_address, void *user_arg)
 {
-  printf("area handler called\n");
+  switch (permissions[get_pagenum(fault_address)]) {
+    case PROT_NONE:
+      //need to get accurrate value and switch to read
+      printf("found PROT_NONE, changing to PROT_READ");
+      if (set_permissions(fault_address, PGSIZE, PROT_READ) < 0) {
+        fprintf(stderr, "Failure setting permissions at %p\n", fault_address);
+        exit (2);
+      }
+      break;
+    case PROT_READ:
+      // attempted to write, so we need to make writeable and then invalidate
+      printf("found PROT_READ, changing to PROT_READ_WRITE");
+     
+      if (set_permissions(fault_address, PGSIZE, PROT_READ_WRITE) < 0) {
+        fprintf(stderr, "Failure setting write permissions at %p\n", fault_address);
+        exit(2);
+      }
+    case PROT_READ_WRITE:
+    default:
+      /*
+      not supporting executes yet, so if we fault here there is a problem
+      */
+      fprintf(stderr, "Attempted Execute at %p\n", fault_address);
+      exit(2);
+      break;
+  }
 }
 
 static int
