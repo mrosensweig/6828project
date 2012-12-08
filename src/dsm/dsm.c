@@ -11,7 +11,7 @@ dsm_init(void)
   void *p;
   unsigned long dsm_area;
   
-  if ( (p = mmap( (void *) DSM_AREA_START, PGSIZE, PROT_READ_WRITE, 
+  if ( (p = mmap( (void *) DSM_AREA_START, PGSIZE, PROT_READ, 
                       MAP_ANONYMOUS | MAP_PRIVATE, -1, 0)) < 0)
   {
     fprintf(stderr, "mmap failed\n");
@@ -26,7 +26,7 @@ dsm_init(void)
 static int
 dsm_area_handler (void *fault_address, void *user_arg)
 {
-  
+  printf("area handler called\n");
 }
 
 static int

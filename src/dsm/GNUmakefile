@@ -1,4 +1,5 @@
 all:
-	gcc -c dsm.c -lsigsegv
-	ar rs libdsm.a dsm.o
+	gcc -c dsm.c mem.c -lsigsegv
+	ar rs libdsm.a dsm.o mem.o
+	rm dsm.o mem.o
 
