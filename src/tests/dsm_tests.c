@@ -4,8 +4,14 @@ int
 main(int argc, char **argv)
 {
   dsm_init();
-  void *a = (void *) DSM_AREA_START;
+  int *a = (int *) DSM_AREA_START;
 
-  unsigned long page = (unsigned long) a;
-  int z = *(volatile int *) (page);
+  mprotect((void *)DSM_AREA_START, PGSIZE, PROT_NONE);
+  
+printf("before\n");
+  int ab = *a;
+printf("after: %p\n", &ab);
+  *a = 17;
+
+  printf("a = %d\n", *a);
 }
