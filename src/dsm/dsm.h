@@ -11,6 +11,8 @@
 #define NPAGES 1
 #endif
 
+extern int permissions[NPAGES];
+
 extern void dsm_init(void);
 
 static int dsm_area_handler (void *fault_address, void *user_arg);
