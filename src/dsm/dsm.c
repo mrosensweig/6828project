@@ -54,6 +54,7 @@ dsm_area_handler (void *fault_address, void *user_arg)
       fprintf(stderr, "Attempted Execute at %p\n", fault_address);
       exit(2);
   }
+  printf("end of handler\n");
 }
 
 static int
