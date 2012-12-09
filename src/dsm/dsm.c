@@ -19,10 +19,13 @@ dsm_init(void)
   }
   dsm_area = (unsigned long) p;
 
-  if (set_permissions((void *) dsm_area, PGSIZE * NPAGES, PROT_READ) < 0) {
+  if (mprotect((void *) dsm_area, PGSIZE * NPAGES, PROT_READ) < 0) {
     fprintf(stderr, "mrpotect failed at %p\n", (void *)dsm_area);
     exit(2);
   }
+  int i;
+  for (i = 0; i < NPAGES; i++)
+    permissions[i] = PROT_READ;
 
   sigsegv_register(&dispatcher, 
                    (void *)dsm_area,
@@ -35,7 +38,6 @@ dsm_init(void)
 static int
 dsm_area_handler (void *fault_address, void *user_arg)
 {
-  printf("Area handler called\n");
   void *aligned_addr = page_align(fault_address);
   int perms = permissions[get_pagenum(fault_address)];
     if ((perms | PROT_NONE) == PROT_NONE) {
@@ -62,8 +64,7 @@ dsm_area_handler (void *fault_address, void *user_arg)
       fprintf(stderr, "Attempted Execute at %p\n", fault_address);
       exit(2);
       return 3;
-  }
-  //printf("end of handler\n");
+    }
   return 4;
 }
 

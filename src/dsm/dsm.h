@@ -8,7 +8,7 @@
 #define PROT_READ_WRITE (PROT_READ|PROT_WRITE)
 #define PGSIZE 0x4000
 #define DSM_AREA_START 0x40000000
-#define NPAGES 1
+#define NPAGES 10
 #endif
 
 //Permissions of each dsm page on this machine
