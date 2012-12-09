@@ -13,3 +13,4 @@ libsigsegv-2.6/src/*.lo
 libsigsegv-2.6/src/*.la
 libsigsegv-2.6/.libs/
 libsigsegv-2.6/libtool
+out/dsmrun
