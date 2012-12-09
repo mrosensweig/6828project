@@ -13,3 +13,4 @@ tests: dsm
 
 clean:
 	rm -rf out
+
