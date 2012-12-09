@@ -28,3 +28,6 @@ int set_permissions(void *addr, size_t len, int prot);
 
 //get dsm page number to index into permissions array
 int get_pagenum(void *addr);
+
+//align a void pointer to a page boundary
+void *page_align(void *addr);

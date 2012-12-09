@@ -36,11 +36,12 @@ static int
 dsm_area_handler (void *fault_address, void *user_arg)
 {
   printf("Area handler called\n");
+  void *aligned_addr = page_align(fault_address);
   int perms = permissions[get_pagenum(fault_address)];
     if ((perms | PROT_NONE) == PROT_NONE) {
       //need to get accurrate value and switch to read
       printf("found PROT_NONE, changing to PROT_READ\n");
-      if (set_permissions(fault_address, PGSIZE, PROT_READ) < 0) {
+      if (set_permissions(aligned_addr, PGSIZE, PROT_READ) < 0) {
         fprintf(stderr, "Failure setting permissions at %p\n", fault_address);
         exit (2);
       }
@@ -49,7 +50,7 @@ dsm_area_handler (void *fault_address, void *user_arg)
       // attempted to write, so we need to make writeable and then invalidate
       printf("found PROT_READ, changing to PROT_READ_WRITE\n");
      
-      if (set_permissions(fault_address, PGSIZE, PROT_READ_WRITE) < 0) {
+      if (set_permissions(aligned_addr, PGSIZE, PROT_READ_WRITE) < 0) {
         fprintf(stderr, "Failure setting write permissions at %p\n", fault_address);
         exit(2);
       }

@@ -26,3 +26,12 @@ get_pagenum(void *addr)
 
   return (a - DSM_AREA_START) / PGSIZE;
 }
+
+void *
+page_align(void *addr)
+{
+  unsigned long page = (unsigned long) addr;
+  page %= PGSIZE;
+  return (void *) ((unsigned long) addr - page);
+}
+
