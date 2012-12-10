@@ -1,15 +1,18 @@
 CC=gcc
+CFLAGS=-pthread
+SOURCES=src/dsm/dsm.c src/dsm/mem.c src/dsm/ownership.c src/dsm/net.c
+OBJECTS=dsm.o mem.o ownership.o net.o
 
 all: tests
 
 dsm:
 	mkdir -p out
-	$(CC) -c src/dsm/dsm.c src/dsm/mem.c src/dsm/ownership.c -lsigsegv
+	$(CC) $(CFLAGS) -c $(SOURCES) -lsigsegv
 	ar rsc out/libdsm.a dsm.o mem.o ownership.o
-	rm dsm.o mem.o ownership.o
+	rm $(OBJECTS)
 
 tests: dsm
-	$(CC) src/tests/dsm_tests.c -o out/dsmrun -L out/ -ldsm -lsigsegv
+	$(CC) $(CFLAGS) src/tests/dsm_tests.c -o out/dsmrun -L out/ -ldsm -lsigsegv
 
 clean:
 	rm -rf out
