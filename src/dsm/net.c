@@ -7,8 +7,10 @@
 #include "netinet/in.h"
 #include "netdb.h"
 #include "fcntl.h"
+#include "net.h"
 
-#define NUM_FORKS 4
+#include "dsm.h"
+
 int proc_id = NUM_FORKS;
 pid_t pids[NUM_FORKS];
 int client_sockets[NUM_FORKS];
@@ -18,6 +20,8 @@ main() {
     spawn_processes();
     start_server_thread();
     child_process();
+
+    send_message(1, 'l', 0, 0);
 
     return 0;
 }
@@ -70,19 +74,18 @@ try_connecting_to_other_servers() {
 
     for(j=0; j<attempts; j++) {
 
-        usleep(1000000);
+        usleep(100000);
         for(i=0; i<NUM_FORKS; i++) {
-            if(i != proc_id && client_sockets[i] == -1) {
+            if(client_sockets[i] == -1) {
                 int client_id = open_client_socket("localhost", 6000 + i);
                 if(client_id < 0) {
                 } else {
-                    printf("Succeeded!\n");
                     sockets_connected ++;
                     client_sockets[i] = client_id;
                 }
             }
         }
-        if(sockets_connected == NUM_FORKS-1) {
+        if(sockets_connected) {
             printf("%d: Connected to all\n", proc_id);
             break;
         }
@@ -147,9 +150,13 @@ start_server(int port) {
     // prepare to accept connection
     struct sockaddr_in client_address;
     socklen_t client_address_length = sizeof(client_address);
-    int accepted = NUM_FORKS-1;
+    int accepted = NUM_FORKS;
     
     int sockets[NUM_FORKS];
+    int i;
+    for(i=0; i<NUM_FORKS; i++) {
+        sockets[i] = -1;
+    }
 
     while(accepted > 0) {
         int client_id = accept(socket_id, (struct sockaddr *) &client_address, &client_address_length);
@@ -166,11 +173,49 @@ start_server(int port) {
 
         sockets[buf[0]] = client_id;
 
-        printf("Accepted a connection from: %d\n", buf[0]);
         accepted --;
-        close(client_id);
     }
+
+
+    char buf[sizeof(struct Message)]; // one extra byte to send a command
+    while(1) {
+
+        for(i=0; i<NUM_FORKS; i++){
+            if(i==proc_id) continue;
+
+            int err = recv( sockets[i], buf, PGSIZE+1, 0);
+            if(err > 0) {
+                // received some stuff
+                buf[err] = '\0';
+                server_received(buf, err);
+            } else {
+            }
+        }
+    }
+
     close(socket_id);
 
     return 0;
 }
+
+int
+server_received(char* buf, int len) {
+    struct Message* msg = (struct Message *) buf;
+
+    printf("Message type: %c.\n", msg->msg_type);
+}
+
+int
+send_message(int target, char type, char permissions, int page_number) {
+    struct Message msg;
+
+    msg.msg_type = type;
+    msg.permissions = permissions;
+    msg.page_number = page_number;
+
+    send(client_sockets[target], (char *) &msg, sizeof(msg), 0);
+
+    return 0;
+}
+
+
