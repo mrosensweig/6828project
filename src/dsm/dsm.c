@@ -1,9 +1,10 @@
 #include "dsm.h"
+#include "ownership.h"
 
 static sigsegv_dispatcher dispatcher;
 
 void
-dsm_init(void)
+dsm_init(int my_id)
 {
   sigsegv_init (&dispatcher);
   sigsegv_install_handler (&handler);
@@ -33,6 +34,10 @@ dsm_init(void)
                    &dsm_area_handler,
                    &dsm_area);
   
+  if (init_dsm_page_ownership(NCORES, NPAGES, my_id) < 0) {
+    fprintf(stderr, "init page ownership failed");
+    exit(2);
+  }
 }
 
 static int
@@ -43,6 +48,12 @@ dsm_area_handler (void *fault_address, void *user_arg)
     if ((perms | PROT_NONE) == PROT_NONE) {
       //need to get accurrate value and switch to read
       printf("found PROT_NONE, changing to PROT_READ\n");
+      
+      if (get_read_copy(get_pagenum(fault_address)) < 0) {
+        fprintf(stderr, "error getting read only copy");
+        exit(2);
+      }
+      
       if (set_permissions(aligned_addr, PGSIZE, PROT_READ) < 0) {
         fprintf(stderr, "Failure setting permissions at %p\n", fault_address);
         exit (2);
@@ -51,7 +62,12 @@ dsm_area_handler (void *fault_address, void *user_arg)
     } else if ((perms | PROT_READ) == PROT_READ) {
       // attempted to write, so we need to make writeable and then invalidate
       printf("found PROT_READ, changing to PROT_READ_WRITE\n");
-     
+      
+      if (get_write_copy(get_pagenum(fault_address)) < 0){
+        fprintf(stderr, "error getting writeable page");
+        exit(2);
+      }
+
       if (set_permissions(aligned_addr, PGSIZE, PROT_READ_WRITE) < 0) {
         fprintf(stderr, "Failure setting write permissions at %p\n", fault_address);
         exit(2);

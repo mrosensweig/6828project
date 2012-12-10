@@ -3,7 +3,7 @@
 int 
 main(int argc, char **argv)
 {
-  dsm_init();
+  dsm_init(0);
   int *a = (int *) (DSM_AREA_START + 0x8000 + 0x34);
 
 printf("before\n");
