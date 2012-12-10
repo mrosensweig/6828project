@@ -227,5 +227,5 @@ send_message(int target, char type, char permissions, int page_number) {
 }
 
 int send_to(int target, struct Message* msg) {
-    send(client_sockets[target], (char *) msg, sizeof(struct Message), 0);
+    return send(client_sockets[target], (char *) msg, sizeof(struct Message), 0);
 }
