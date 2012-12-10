@@ -12,9 +12,9 @@
 #include "net.h"
 #include "dsm.h"
 
-int proc_id = NUM_FORKS;
-pid_t pids[NUM_FORKS];
-int client_sockets[NUM_FORKS];
+int proc_id = NCORES;
+pid_t pids[NCORES];
+int client_sockets[NCORES];
 
 int
 main() {
@@ -32,7 +32,7 @@ main() {
 int
 spawn_processes() {
     int i;
-    for(i=0; i<NUM_FORKS; i++) {
+    for(i=0; i<NCORES; i++) {
         int pid = fork();
         if(pid == 0){
         } else {
@@ -42,7 +42,7 @@ spawn_processes() {
         }
     }
 
-    if (i==NUM_FORKS) {
+    if (i==NCORES) {
         exit(0);
     }
 
@@ -66,7 +66,7 @@ int
 try_connecting_to_other_servers() {
     int i, j;
 
-    for(i=0; i<NUM_FORKS; i++) {
+    for(i=0; i<NCORES; i++) {
         client_sockets[i] = -1;
     }
 
@@ -76,7 +76,7 @@ try_connecting_to_other_servers() {
     for(j=0; j<attempts; j++) {
 
         usleep(100000);
-        for(i=0; i<NUM_FORKS; i++) {
+        for(i=0; i<NCORES; i++) {
             if(client_sockets[i] == -1) {
                 int client_id = open_client_socket("localhost", 6000 + i);
                 if(client_id < 0) {
@@ -158,11 +158,11 @@ start_server() {
     // prepare to accept connection
     struct sockaddr_in client_address;
     socklen_t client_address_length = sizeof(client_address);
-    int accepted = NUM_FORKS;
+    int accepted = NCORES;
     
-    int sockets[NUM_FORKS];
+    int sockets[NCORES];
     int i;
-    for(i=0; i<NUM_FORKS; i++) {
+    for(i=0; i<NCORES; i++) {
         sockets[i] = -1;
     }
 
@@ -188,7 +188,7 @@ start_server() {
     char buf[sizeof(struct Message)];
     while(1) {
 
-        for(i=0; i<NUM_FORKS; i++){
+        for(i=0; i<NCORES; i++){
             if(i==proc_id) continue;
 
             int err = recv( sockets[i], buf, sizeof(struct Message), 0);

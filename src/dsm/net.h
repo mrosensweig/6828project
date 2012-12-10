@@ -11,8 +11,6 @@
 #include "netdb.h"
 #include "dsm.h"
 
-#define NUM_FORKS 4
-
 struct Message {
     char msg_type;
     char permissions;
