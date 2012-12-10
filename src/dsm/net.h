@@ -17,13 +17,15 @@ struct Message {
     char msg_type;
     char permissions;
     int page_number;
+    char page[PGSIZE];
 };
 
 int spawn_processes();
 int start_server_thread();
 int child_process();
 int try_connecting_to_other_servers();
+static void* start_server();
 
-int send_message(int target, char type, char permissions, int page_number);
+int send_message(int target, char type, char permissions, int page_number, char page[PGSIZE]);
 
 #endif

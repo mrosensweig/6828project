@@ -7,8 +7,9 @@
 #include "netinet/in.h"
 #include "netdb.h"
 #include "fcntl.h"
-#include "net.h"
+#include "pthread.h"
 
+#include "net.h"
 #include "dsm.h"
 
 int proc_id = NUM_FORKS;
@@ -21,8 +22,10 @@ main() {
     start_server_thread();
     child_process();
 
-    send_message(1, 'l', 0, 0);
+    char buf[PGSIZE];
+    send_message(1, 'l', 0, 0, buf);
 
+    pthread_exit(0);
     return 0;
 }
 
@@ -48,12 +51,10 @@ spawn_processes() {
 
 int
 start_server_thread() {
-
-    int pid = fork();
-    if(pid == 0) {
-        start_server(6000 + proc_id);
-        exit(0);
-    }
+    pthread_t thread;
+    pthread_attr_t attr;
+    pthread_attr_init(&attr);
+    pthread_create(&thread, &attr, &start_server, NULL);
 }
 
 int
@@ -124,7 +125,14 @@ open_client_socket(char *hostname, int port) {
 }
 
 int
-start_server(int port) {
+get_port() {
+    return 6000 + proc_id;
+}
+
+static void*
+start_server() {
+
+    int port = get_port();
 
     // create a socket
     int socket_id = socket(AF_INET, SOCK_STREAM, 0);
@@ -177,13 +185,13 @@ start_server(int port) {
     }
 
 
-    char buf[sizeof(struct Message)]; // one extra byte to send a command
+    char buf[sizeof(struct Message)];
     while(1) {
 
         for(i=0; i<NUM_FORKS; i++){
             if(i==proc_id) continue;
 
-            int err = recv( sockets[i], buf, PGSIZE+1, 0);
+            int err = recv( sockets[i], buf, sizeof(struct Message), 0);
             if(err > 0) {
                 // received some stuff
                 buf[err] = '\0';
@@ -202,18 +210,19 @@ int
 server_received(char* buf, int len) {
     struct Message* msg = (struct Message *) buf;
 
-    printf("Message type: %c.\n", msg->msg_type);
+    printf("%d: Message type: %c.\n", proc_id, msg->msg_type);
 }
 
 int
-send_message(int target, char type, char permissions, int page_number) {
+send_message(int target, char type, char permissions, int page_number, char page[PGSIZE]) {
     struct Message msg;
 
     msg.msg_type = type;
     msg.permissions = permissions;
     msg.page_number = page_number;
+    memcpy(msg.page, (char *) page, PGSIZE);
 
-    send(client_sockets[target], (char *) &msg, sizeof(msg), 0);
+    send(client_sockets[target], (char *) &msg, sizeof(struct Message), 0);
 
     return 0;
 }
