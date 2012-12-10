@@ -12,8 +12,6 @@
 #include "dsm.h"
 #include "ownership.h"
 
-#define NUM_FORKS 4
-
 int spawn_processes();
 int start_server_thread();
 int child_process();
