@@ -26,6 +26,7 @@ int child_process();
 int try_connecting_to_other_servers();
 static void* start_server();
 
-int send_message(int target, char type, char permissions, int page_number, char page[PGSIZE]);
+int send_message(int target, char type, char permissions, int page_number);
+int send_to(int target, struct Message* msg);
 
 #endif

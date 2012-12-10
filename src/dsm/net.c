@@ -22,8 +22,8 @@ main() {
     start_server_thread();
     child_process();
 
-    char buf[PGSIZE];
-    send_message(1, 'l', 0, 0, buf);
+    usleep(10000);
+    send_message(1, 'l', 0, 0);
 
     pthread_exit(0);
     return 0;
@@ -214,17 +214,18 @@ server_received(char* buf, int len) {
 }
 
 int
-send_message(int target, char type, char permissions, int page_number, char page[PGSIZE]) {
+send_message(int target, char type, char permissions, int page_number) {
     struct Message msg;
 
     msg.msg_type = type;
     msg.permissions = permissions;
     msg.page_number = page_number;
-    memcpy(msg.page, (char *) page, PGSIZE);
 
     send(client_sockets[target], (char *) &msg, sizeof(struct Message), 0);
 
     return 0;
 }
 
-
+int send_to(int target, struct Message* msg) {
+    send(client_sockets[target], (char *) msg, sizeof(struct Message), 0);
+}
