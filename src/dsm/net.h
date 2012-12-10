@@ -10,15 +10,9 @@
 #include "netinet/in.h"
 #include "netdb.h"
 #include "dsm.h"
+#include "ownership.h"
 
 #define NUM_FORKS 4
-
-struct Message {
-    char msg_type;
-    char permissions;
-    int page_number;
-    char page[PGSIZE];
-};
 
 int spawn_processes();
 int start_server_thread();

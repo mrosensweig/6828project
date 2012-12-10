@@ -206,3 +206,9 @@ quit_dsm_page_ownership () {
     ownershipInfo = NULL;
     return 0;
 }
+
+int
+receive_message(int from, struct Message* msg) {
+    // YO PUT YOU SHIT HERE
+    return 0;
+}

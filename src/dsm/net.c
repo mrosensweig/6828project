@@ -8,9 +8,8 @@
 #include "netdb.h"
 #include "fcntl.h"
 #include "pthread.h"
-
+#include "ownership.h"
 #include "net.h"
-#include "dsm.h"
 
 int proc_id = NUM_FORKS;
 pid_t pids[NUM_FORKS];
@@ -195,7 +194,7 @@ start_server() {
             if(err > 0) {
                 // received some stuff
                 buf[err] = '\0';
-                server_received(buf, err);
+                server_received(i, buf, err);
             } else {
             }
         }
@@ -207,10 +206,11 @@ start_server() {
 }
 
 int
-server_received(char* buf, int len) {
+server_received(int i, char* buf, int len) {
     struct Message* msg = (struct Message *) buf;
 
     printf("%d: Message type: %c.\n", proc_id, msg->msg_type);
+    return receive_message(i, msg);
 }
 
 int

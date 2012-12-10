@@ -1,7 +1,7 @@
-#include "dsm.h"
 
 #ifndef __828_DSM_OWNERSHIP__
 #define __828_DSM_OWNERSHIP__
+#include "dsm.h"
 
 // Sentinel value for no owner (i.e. no owner is currently modifying)
 #define NO_OWNER     (-1)
@@ -39,6 +39,8 @@ int give_read_copy (int requester_id, int page_number);
 int give_write_copy (int requester_id, int page_number);
 
 int quit_dsm_page_ownership();
+
+int receive_message(int from, struct Message* msg);
 
 // Error Codes
 #define E_UNHANDLED_PAGE_STATUS    1

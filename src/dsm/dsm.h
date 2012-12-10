@@ -1,3 +1,6 @@
+#ifndef __6828_dsm_h__
+#define __6828_dsm_h__
+
 #include "sigsegv.h"
 #include "sys/mman.h"
 #include <stdio.h>
@@ -11,6 +14,13 @@
 #define NPAGES 10
 #define NCORES 5
 #endif
+
+struct Message {
+    char msg_type;
+    char permissions;
+    int page_number;
+    char page[PGSIZE];
+};
 
 //Permissions of each dsm page on this machine
 extern int permissions[NPAGES];
@@ -32,3 +42,5 @@ int get_pagenum(void *addr);
 
 //align a void pointer to a page boundary
 void *page_align(void *addr);
+
+#endif
