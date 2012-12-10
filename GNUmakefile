@@ -9,7 +9,7 @@ dsm:
 	rm dsm.o mem.o ownership.o
 
 tests: dsm
-	$(CC) src/tests/dsm_tests.c -o out/dsmrun -L out/ -ldsm -lsigsegv
+	$(CC) src/tests/dsm_run.c -o out/dsmrun -L out/ -ldsm -lsigsegv
 
 clean:
 	rm -rf out

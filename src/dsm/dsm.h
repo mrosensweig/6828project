@@ -9,14 +9,14 @@
 #define PGSIZE 0x1000
 #define DSM_AREA_START 0x40000000
 #define NPAGES 10
-#define NCORES 5
+#define NCORES 2
 #endif
 
 //Permissions of each dsm page on this machine
 extern int permissions[NPAGES];
 
 //initialize dsm functions and handlers
-extern void dsm_init(int my_id);
+extern void dsm_init(int my_id, int readfd, int writefd);
 
 //handler for dsm region
 static int dsm_area_handler (void *fault_address, void *user_arg);
