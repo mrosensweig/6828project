@@ -8,11 +8,11 @@ all: tests
 dsm:
 	mkdir -p out
 	$(CC) $(CFLAGS) -c $(SOURCES) -lsigsegv
-	ar rsc out/libdsm.a dsm.o mem.o ownership.o
+	ar rsc out/libdsm.a $(OBJECTS)
 	rm $(OBJECTS)
 
 tests: dsm
-	$(CC) $(CFLAGS) src/tests/dsm_tests.c -o out/dsmrun -L out/ -ldsm -lsigsegv
+	$(CC) $(CFLAGS) src/tests/dsm_run.c -o out/dsmrun -L out/ -ldsm -lsigsegv
 
 clean:
 	rm -rf out
