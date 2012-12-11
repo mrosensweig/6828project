@@ -84,7 +84,7 @@ try_connecting_to_other_servers() {
         for(i=0; i<NCORES; i++) {
             if(client_sockets[i] == -1) {
                 printf("%d: Attempting to connect to %d\n", proc_id, i);
-                int client_id = open_client_socket("localhost", 6000 + i);
+                int client_id = open_client_socket("localhost", 6100 + i);
                 if(client_id < 0) {
                 } else {
                     sockets_connected ++;
@@ -134,7 +134,7 @@ open_client_socket(char *hostname, int port) {
 
 int
 get_port() {
-    return 6000 + proc_id;
+    return 6100 + proc_id;
 }
 
 static void*
@@ -190,6 +190,7 @@ start_server() {
 
         fcntl(client_id, F_SETFL, O_NONBLOCK);
 
+        printf("%d: accepted connection from %d.\n", proc_id, buf[0]);
         sockets[buf[0]] = client_id;
 
         accepted --;
@@ -229,7 +230,6 @@ int
 server_received(int i, char* buf, int len) {
     struct Message* msg = (struct Message *) buf;
 
-    printf("%d: Message type: %c.\n", proc_id, msg->msg_type);
     return receive_message(i, msg);
 }
 
@@ -247,5 +247,6 @@ send_message(int target, char type, char permissions, int page_number) {
 }
 
 int send_to(int target, struct Message* msg) {
+    printf("%d: sending message to %d of type %d\n", proc_id, target, msg->msg_type);
     return send(client_sockets[target], (char *) msg, sizeof(struct Message), 0);
 }
