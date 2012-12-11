@@ -145,7 +145,8 @@ create_message (int type, int perms, int pagenum) {
     m.msg_type = type;
     m.permissions = perms;
     m.page_number = pagenum;
-    m.is_response = NO_RESPONSE;
+    m.is_response = 0;
+    m.index = NO_RESPONSE;
     return m;
 }
 
@@ -528,7 +529,10 @@ receive_message (int sender_id, struct Message *m) {
             void *pageaddr = (void *) get_pageaddr(m->page_number);
             result = set_permissions(pageaddr, PGSIZE, m->permissions);
             if (m->is_response) {
+                printf("%d: set permission is response, respond id: %d\n", thisid, m->index);
                 pthread_cond_signal(&waits[m->index]);
+            } else {
+                printf("%d: set permission is not response\n", thisid);
             }
             pthread_mutex_unlock(&locks[m->page_number]);
             break;
