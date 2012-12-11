@@ -15,4 +15,12 @@ main(int argc, char **argv)
     int *o = (int *) (DSM_AREA_START + 0xb12);
     printf("Ten: %d\n", *o);
   }
+
+/*
+  int i;
+  for(i=0; i<NCORES; i++) {
+      send_to(i, (struct Message *) "xlollll");
+    }
+  */  
+  pthread_exit(0);
 }

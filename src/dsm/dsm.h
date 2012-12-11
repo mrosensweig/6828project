@@ -12,7 +12,7 @@
 #define PGSIZE 0x1000
 #define DSM_AREA_START 0x40000000
 #define NPAGES 10
-#define NCORES 2
+#define NCORES 4
 #endif
 
 extern int proc_id;

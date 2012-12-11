@@ -540,7 +540,7 @@ receive_message (int sender_id, struct Message *m) {
             break;
         }
         default: {
-            printf("Unhandled message type in give_read_copy.\n");
+            printf("Unhandled message type in give_read_copy: %c\n", m->msg_type);
             exit(-E_UNHANDLED_MESSAGE_TYPE);
         }
     }

@@ -13,11 +13,12 @@
 #include "ownership.h"
 
 // Message types
-#define REQUEST_PAGE        0
-#define SEND_PAGE           1
-#define SET_PERMISSION      2
-#define REQUEST_PERMISSION  3
-#define ACK                 4
+#define REQUEST_PAGE        'r'
+#define SEND_PAGE           's'
+#define SET_PERMISSION      'p'
+#define REQUEST_PERMISSION  'q'
+#define ACK                 'a'
+#define EXIT                'x'
 
 int spawn_processes();
 int start_server_thread();

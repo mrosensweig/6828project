@@ -11,6 +11,13 @@
 #include "ownership.h"
 #include "net.h"
 
+
+void error(const char *msg)
+{
+    perror(msg);
+    exit(0);
+}
+
 int proc_id = NCORES;
 pid_t pids[NCORES];
 int client_sockets[NCORES];
@@ -20,7 +27,6 @@ dsm_start() {
     spawn_processes();
 
     dsm_init(proc_id);
-
     start_server_thread();
     child_process();
 
@@ -71,11 +77,13 @@ try_connecting_to_other_servers() {
     int sockets_connected = 0;
     int attempts = (NCORES + 1) * 5;
 
-    for(j=0; j<attempts; j++) {
+    for(;;){
+    //for(j=0; j<attempts; j++) {
 
         usleep(100000);
         for(i=0; i<NCORES; i++) {
             if(client_sockets[i] == -1) {
+                printf("%d: Attempting to connect to %d\n", proc_id, i);
                 int client_id = open_client_socket("localhost", 6000 + i);
                 if(client_id < 0) {
                 } else {
@@ -99,6 +107,8 @@ open_client_socket(char *hostname, int port) {
 
     portno = port;
     sockfd = socket(AF_INET, SOCK_STREAM, 0);
+    int optval = 1;
+    setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, &optval, sizeof optval);
     if (sockfd < 0) 
         error("ERROR opening socket");
     server = gethostbyname(hostname);
@@ -134,6 +144,9 @@ start_server() {
 
     // create a socket
     int socket_id = socket(AF_INET, SOCK_STREAM, 0);
+
+    int optval = 1;
+    setsockopt(socket_id, SOL_SOCKET, SO_REUSEADDR, &optval, sizeof optval);
 
     if(socket_id < 0) {
         error("Error opening server socket.\n");
@@ -182,9 +195,12 @@ start_server() {
         accepted --;
     }
 
+    printf("%d: accepted all connections.", proc_id);
+
+    int exit = 0;
 
     char buf[sizeof(struct Message)];
-    while(1) {
+    while(!exit) {
 
         for(i=0; i<NCORES; i++){
             if(i==proc_id) continue;
@@ -193,6 +209,10 @@ start_server() {
             if(err > 0) {
                 // received some stuff
                 buf[err] = '\0';
+                if(buf[0] == EXIT) {
+                    exit = 1;
+                    break;
+                }
                 server_received(i, buf, err);
             } else {
             }
@@ -200,6 +220,7 @@ start_server() {
     }
 
     close(socket_id);
+    printf("%d: CLOSED IT BITCH\n", proc_id);
 
     return 0;
 }
