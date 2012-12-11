@@ -11,8 +11,18 @@
 \doublespace
 \section{Introduction}
 For our project we implemented a basic Distributed Shared Memory system in user
-space on top of Linux.  
+space on top of Linux.  Using DSM, multiple PCs can work
+on the same problem simultaneously, and the system make sure that the memory
+stays in sync as if all the CPUs were on one machine simply running in separate
+threads.
 \section{Implementation}
+In our implementation of shared memory, each page has a process designated as
+its owner.  When other processes want to perform operations on this page of
+memory, they will sometimes have to contact the owner to receive updates on the
+state of that page.
+
+Each page can exist in three different states: Invalid, Reading, or Writing
 \section{Testing}
+
 \section{Analysis and Conclusions}
 \end{document}          
