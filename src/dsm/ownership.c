@@ -146,6 +146,7 @@ create_message (int type, int perms, int pagenum) {
     m.permissions = perms;
     m.page_number = pagenum;
     m.is_response = NO_RESPONSE;
+    return m;
 }
 
 static int
@@ -154,14 +155,17 @@ send_and_wait_for_response (int target, struct Message *m) {
     int wait_index;
     if ((wait_index = get_wait_index()) < 0) {
         // Error
+        printf("%d: wait_index error\n", thisid);
         return wait_index;
     }
     m->index = wait_index;
     // Send message over network
     if ((result = send_to(target, m)) < 0) {
+        printf("%d: send message error\n", thisid);
         return result;
     }
     // wait for response
+    printf("%d: waiting on index %d\n", thisid, wait_index);
     pthread_cond_wait(&waits[wait_index], &locks[m->page_number]);
     return_wait_index(wait_index);
     return 0;
@@ -302,6 +306,7 @@ give_write_copy (int requester_id, int request_id, int page_number) {
                     printf("%d: Telling %d that it is INVALIDATED\n", thisid, i);
                     struct Message m = create_message(SET_PERMISSION,
                             INVALIDATED, page_number);
+                    printf("%d: sending message of type %d\n", thisid, m.msg_type);
                     result = send_to(i, &m);
                     if (result < 0) break;
                     page_status->status_by_owner[i] = INVALIDATED;
