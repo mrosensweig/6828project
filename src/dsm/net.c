@@ -16,15 +16,16 @@ pid_t pids[NCORES];
 int client_sockets[NCORES];
 
 int
-main() {
+dsm_start() {
     spawn_processes();
     start_server_thread();
     child_process();
 
     usleep(10000);
-    send_message(1, 'l', 0, 0);
-
-    pthread_exit(0);
+    //send_message(1, 'l', 0, 0);
+    
+    dsm_init(proc_id);
+    //pthread_exit(0);
     return 0;
 }
 

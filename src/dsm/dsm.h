@@ -15,6 +15,8 @@
 #define NCORES 5
 #endif
 
+extern int proc_id;
+
 struct Message {
     char msg_type;
     char permissions;
@@ -24,6 +26,9 @@ struct Message {
 
 //Permissions of each dsm page on this machine
 extern int permissions[NPAGES];
+
+// initialize sockets and dsm stuff
+extern int dsm_start(void);
 
 //initialize dsm functions and handlers
 extern void dsm_init(int my_id);
