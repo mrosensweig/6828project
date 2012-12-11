@@ -196,12 +196,12 @@ start_server() {
         accepted --;
     }
 
-    printf("%d: accepted all connections.", proc_id);
+    printf("%d: accepted all connections.\n", proc_id);
 
     int exit = 0;
 
     char buf[sizeof(struct Message)];
-    while(! exit==NCORES) {
+    while(exit < (NCORES - 1)) {
 
         for(i=0; i<NCORES; i++){
             if(i==proc_id) continue;
@@ -211,6 +211,7 @@ start_server() {
                 // received some stuff
                 buf[err] = '\0';
                 if(buf[0] == EXIT) {
+                    printf("%d: received exit message from %d\n", proc_id, i);
                     exit++;
                     break;
                 }
