@@ -201,7 +201,7 @@ start_server() {
     int exit = 0;
 
     char buf[sizeof(struct Message)];
-    while(!exit) {
+    while(! exit==NCORES) {
 
         for(i=0; i<NCORES; i++){
             if(i==proc_id) continue;
@@ -211,7 +211,7 @@ start_server() {
                 // received some stuff
                 buf[err] = '\0';
                 if(buf[0] == EXIT) {
-                    exit = 1;
+                    exit++;
                     break;
                 }
                 server_received(i, buf, err);

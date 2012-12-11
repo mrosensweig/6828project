@@ -1,5 +1,13 @@
 #include "../dsm/dsm.h"
 
+int die() {
+
+      int i;
+      for(i=0; i<NCORES; i++) {
+  //        send_to(i, (struct Message *) "xlollll");
+      }
+}
+
 int 
 main(int argc, char **argv)
 {
@@ -14,13 +22,11 @@ main(int argc, char **argv)
     sleep(2);
     int *o = (int *) (DSM_AREA_START + 0xb12);
     printf("Ten: %d\n", *o);
+    die();
+  } else {
   }
 
-/*
-  int i;
-  for(i=0; i<NCORES; i++) {
-      send_to(i, (struct Message *) "xlollll");
-    }
-  */  
+
+    
   pthread_exit(0);
 }
