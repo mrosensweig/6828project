@@ -306,7 +306,7 @@ give_write_copy (int requester_id, int request_id, int page_number) {
                     printf("%d: Telling %d that it is INVALIDATED\n", thisid, i);
                     struct Message m = create_message(SET_PERMISSION,
                             INVALIDATED, page_number);
-                    printf("%d: sending message of type %d\n", thisid, m.msg_type);
+                    printf("%d: sending message of type %c\n", thisid, m.msg_type);
                     result = send_to(i, &m);
                     if (result < 0) break;
                     page_status->status_by_owner[i] = INVALIDATED;
@@ -488,7 +488,7 @@ quit_dsm_page_ownership () {
 
 int
 receive_message (int sender_id, struct Message *m) {
-    printf("%d: received message from %d of type %d\n", thisid, sender_id,
+    printf("%d: received message from %d of type %c\n", thisid, sender_id,
             m->msg_type);
     int result;
     switch (m->msg_type) {

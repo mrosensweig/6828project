@@ -247,6 +247,6 @@ send_message(int target, char type, char permissions, int page_number) {
 }
 
 int send_to(int target, struct Message* msg) {
-    printf("%d: sending message to %d of type %d\n", proc_id, target, msg->msg_type);
+    printf("%d: sending message to %d of type %c\n", proc_id, target, msg->msg_type);
     return send(client_sockets[target], (char *) msg, sizeof(struct Message), 0);
 }
