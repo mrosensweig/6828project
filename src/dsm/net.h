@@ -15,8 +15,8 @@
 // Message types
 #define REQUEST_PAGE        'r'
 #define SEND_PAGE           's'
-#define SET_PERMISSION      'p'
-#define REQUEST_PERMISSION  'q'
+#define SET_PERMISSION      'S'
+#define REQUEST_PERMISSION  'R'
 #define ACK                 'a'
 #define EXIT                'x'
 
