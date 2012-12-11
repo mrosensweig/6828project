@@ -29,6 +29,8 @@ dsm_start() {
     dsm_init(proc_id);
     start_server_thread();
     child_process();
+    
+    sleep(2);
 
     return 0;
 }
@@ -84,7 +86,7 @@ try_connecting_to_other_servers() {
         for(i=0; i<NCORES; i++) {
             if(client_sockets[i] == -1) {
                 printf("%d: Attempting to connect to %d\n", proc_id, i);
-                int client_id = open_client_socket("localhost", 6200 + i);
+                int client_id = open_client_socket("localhost", 6300 + i);
                 if(client_id < 0) {
                 } else {
                     sockets_connected ++;
@@ -134,7 +136,7 @@ open_client_socket(char *hostname, int port) {
 
 int
 get_port() {
-    return 6200 + proc_id;
+    return 6300 + proc_id;
 }
 
 static void*

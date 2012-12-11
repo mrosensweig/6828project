@@ -194,6 +194,7 @@ give_read_copy (int requester_id, int request_id, int page_number) {
     struct PageStatus *page_status = get_page_status(page_number);
     switch (page_status->status) {
         case READABLE: {
+            printf("  READABLE\n");
             if (requester_id == thisid) {
                 // Status should not be readable without local copy having
                 //   read permissions; with these permissions, a page fault
@@ -201,7 +202,7 @@ give_read_copy (int requester_id, int request_id, int page_number) {
                 result = -E_INCONSISTENT_STATE;
                 break;
             }
-            // Transfer page over network to owner_id and tell it it
+            // Transfer page over network to requester_id and tell it it
             //   has PROT_READ access
             struct Message m = create_message(SEND_PAGE, READING, page_number);
             memcpy((void *) m.page, (void *) get_pageaddr(page_number), PGSIZE);
@@ -211,12 +212,13 @@ give_read_copy (int requester_id, int request_id, int page_number) {
                 break;
             }
             m.index = request_id;
-            if ((result = send_to(owner_id, &m)) < 0) break;
+            if ((result = send_to(requester_id, &m)) < 0) break;
             page_status->status_by_owner[requester_id] = READABLE;
             result = 0;
             break;
         }
         case MODIFIED: {
+            printf("  MODIFIED\n");
             int modifier = page_status->modifying_owner;
             if (modifier == requester_id) {
                 // The modifier should have read-write permissions, in which
@@ -538,9 +540,11 @@ receive_message (int sender_id, struct Message *m) {
             break;
         }
         case (REQUEST_PERMISSION): {
-            if (m->permissions = READING) {
+            if (m->permissions == READING) {
+                printf("%d: calling give_read_copy for %d\n", thisid, sender_id);
                 give_read_copy(sender_id, m->index, m->page_number);
-            } else if (m->permissions = MODIFYING) {
+            } else if (m->permissions == MODIFYING) {
+                printf("%d: calling give_write_copy for %d\n", thisid, sender_id);
                 give_write_copy(sender_id, m->index, m->page_number);
             } else {
                 result = -E_UNHANDLED_PAGE_STATUS;

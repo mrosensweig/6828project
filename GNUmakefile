@@ -14,6 +14,7 @@ dsm:
 tests: dsm
 	$(CC) $(CFLAGS) src/tests/dsm_run.c -o out/dsmrun -L out/ -ldsm -lsigsegv
 	$(CC) $(CFLAGS) src/tests/dsm_all_cores.c -o out/dsmallcores -L out/ -ldsm -lsigsegv
+	$(CC) $(CFLAGS) src/tests/dsm_more.c -o out/morecores -L out/ -ldsm -lsigsegv
 
 clean:
 	rm -rf out
