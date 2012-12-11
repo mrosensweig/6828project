@@ -12,6 +12,13 @@
 #include "dsm.h"
 #include "ownership.h"
 
+// Message types
+#define REQUEST_PAGE        0
+#define SEND_PAGE           1
+#define SET_PERMISSION      2
+#define REQUEST_PERMISSION  3
+#define ACK                 4
+
 int spawn_processes();
 int start_server_thread();
 int child_process();

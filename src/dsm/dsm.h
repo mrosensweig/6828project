@@ -12,7 +12,7 @@
 #define PGSIZE 0x1000
 #define DSM_AREA_START 0x40000000
 #define NPAGES 10
-#define NCORES 5
+#define NCORES 2
 #endif
 
 extern int proc_id;
@@ -21,6 +21,8 @@ struct Message {
     char msg_type;
     char permissions;
     int page_number;
+    int index;
+    int is_response;
     char page[PGSIZE];
 };
 
@@ -44,6 +46,9 @@ int set_permissions(void *addr, size_t len, int prot);
 
 //get dsm page number to index into permissions array
 int get_pagenum(void *addr);
+
+//get dsm address from index into permissions array
+void *get_pageaddr(int pagenum);
 
 //align a void pointer to a page boundary
 void *page_align(void *addr);

@@ -28,6 +28,12 @@ get_pagenum(void *addr)
 }
 
 void *
+get_pageaddr(int pagenum)
+{
+    return (void *) (pagenum * PGSIZE + (unsigned long) DSM_AREA_START);
+}
+
+void *
 page_align(void *addr)
 {
   unsigned long page = (unsigned long) addr;

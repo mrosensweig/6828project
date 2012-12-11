@@ -18,14 +18,12 @@ int client_sockets[NCORES];
 int
 dsm_start() {
     spawn_processes();
+
+    dsm_init(proc_id);
+
     start_server_thread();
     child_process();
 
-    usleep(10000);
-    //send_message(1, 'l', 0, 0);
-    
-    dsm_init(proc_id);
-    //pthread_exit(0);
     return 0;
 }
 
@@ -71,7 +69,7 @@ try_connecting_to_other_servers() {
     }
 
     int sockets_connected = 0;
-    int attempts = 5;
+    int attempts = (NCORES + 1) * 5;
 
     for(j=0; j<attempts; j++) {
 
@@ -86,7 +84,7 @@ try_connecting_to_other_servers() {
                 }
             }
         }
-        if(sockets_connected) {
+        if(sockets_connected == NCORES) {
             printf("%d: Connected to all\n", proc_id);
             break;
         }
